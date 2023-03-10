@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    
+    <!---- Sign Up  -->
+    <div class="signup">
+    <form>
+        <h1>SIGN UP</h1>
+        <input type="text" id="uname" placeholder="Username" >
+        <input type="email" id="email" placeholder="Email" >
+        <input type="text" id="pwd1" placeholder="Password">
+        <input type="password" id="pwd2" placeholder="Confirm Password">
+        <button type="button" id="submitData">REGISTER</button>
+
+        <span><a href="#signin" onclick="signInForm()">Already have an account?</a></span>
+        
+    </form>
+</div>
+
+    <!-- Sign In -->
+    <div class="signin">
+    <form>
+        <h1>SIGN IN</h1>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button id="loginBtn">LOGIN</button>
+        <span><a href="#forgotPass" onclick="forgotForm()">Forgot password?</a></span>
+        <span><a href="#signup" onclick="signUpForm()">Don't have an account?</a></span>
+    </form>
+    </div>
+
+   
+    <script src="script.js"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+        import { getFirestore , setDoc, addDoc , collection , query, where, getDocs} from "https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js";
+ 
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyBKNkoX9kJe_7jq14FWyFJHJshUTCwYKvM",
+          authDomain: "fir-crud-72f83.firebaseapp.com",
+          projectId: "fir-crud-72f83",
+          storageBucket: "fir-crud-72f83.appspot.com",
+          messagingSenderId: "924645571675",
+          appId: "1:924645571675:web:d51fb8df3886bf66d3937e",
+          measurementId: "G-V07KY49Y3T"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+      
+
+        // Initialize Cloud Firestore and get a reference to the service
+        const db = getFirestore(app);
+
+        //Inserting data into database
+        
+
+        submitData.addEventListener("click",(e)=>
+        {
+            e.preventDefault()
+            console.log("event triggered")
+            const name = document.getElementById("uname").value 
+            const email = document.getElementById("email").value
+            const pass = document.getElementById("pwd1").value
+            const confirmPass = document.getElementById("pwd2").value
+
+            //Email validation expression
+            const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+            if(name.length<=0)
+            {
+                swal("OOPS!", "Enter Username", "error")
+            }
+            else if(!(email.match(validRegex)))
+            {
+                swal("OOPS!", "Enter a valid email", "error")
+            }
+            else if(pass.length<6)
+            {
+                swal("OOPS!", "Password must have atleast 6 characters!", "error")
+            }
+            else if(pass!=confirmPass)
+            {
+                swal("OOPS!", "Incorrect Confirm Password!", "error");
+            }
+            else 
+            {
+
+        addDoc(collection(db,"users"),{
+                    
+        name : name,
+        email : email,
+        pass : pass
+        
+       })
+
+       swal("Congrats!", "Account created successfully!", "success");
+       setInterval(function() {
+        document.querySelector(".signin").style.display = "block";
+        document.querySelector(".signup").style.display = "none";
+}, 3000);
+
+    }
+    
+  
+
+        })
+
+        loginBtn.addEventListener("click",(e)=>
+        {
+            e.preventDefault()
+            console.log("login btn clicked")
+            const name = document.getElementById("username").value 
+            const pass = document.getElementById("pass").value
+
+            //fetching data from the database
+            const q = query(collection(db, "users"), where("name", "==", name),where("pass","==",pass));
+
+        getDocs(q).then(docSnap => {
+            let users = []
+
+            docSnap.forEach((doc)=> {
+            
+                users.push({...doc.data(), id:doc.id})
+            
+            })
+            //console.log("Document Details : ",users[0])
+            if(users[0])
+            {
+                console.log("login success")
+                swal("Congrats!", "Login Successfully completed!", "success");
+            }
+            if(!users[0])
+            {
+                console.log("Login failed")
+                swal("OOPS!", "Incorrect Username or Password!", "error");
+            }
+        })
+
+            
+        
+        })
+
+        
+
+
+      </script>
+
+</body>
+</html>
