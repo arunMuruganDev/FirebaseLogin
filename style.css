@@ -17,7 +17,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    background:linear-gradient(to right,#58e8cb,#e86177);
+    background:linear-gradient(to right,#73f5a5,#4292e3);
 }
 .signup form{
     height: 33rem;
